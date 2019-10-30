@@ -1,0 +1,98 @@
+﻿@{
+    var KeyId = ViewBag.ID;
+}
+<form>
+    <div class="page-content animated fadeInDown">
+        <div class="container-fluid" style="padding-bottom:100px;">
+            <div class="row" id="form">
+                <ul id="myTab" class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#email" data-toggle="tab">
+                            邮箱
+                        </a>
+                    </li>
+                    <li><a href="#buy_house" data-toggle="tab">买房信息</a></li>
+                    <li><a href="#building" data-toggle="tab">建房进度</a></li>
+                    <li><a href="#daikuan" data-toggle="tab">贷款进度</a></li>
+                    <li><a href="#chuzu" data-toggle="tab">出租信息</a></li>
+                    <li class="baoshui"><a href="#baoshui" data-toggle="tab">报税&折旧</a></li>
+                    <li><a href="#tongxunlu" data-toggle="tab">通讯录</a></li>
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div class="tab-pane fade in active" id="email">
+                        <!--检索面板-->
+
+                        @UI.Input("名称", "Email_Name", 12)
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--按钮-->
+    <div class="my-ButtonBar text-right">
+        <div class="btn-group">
+            <button type="button" class="btn btn-success btn-outline" data-power="Add" data-bind="visible: !App.IsAdd()" onclick="adminForm.resetUrl(null)">新增</button>
+            <button class="btn btn-primary btn-outline" onclick="App.Save()">提交</button>
+            <button class="btn btn-danger btn-outline" onclick="admin.layer.close(admin.getLayerIframeIndex());">关闭</button>
+        </div>
+    </div>
+</form>
+@section css{
+}
+@section js{
+    <script src="~/Admin/lib/Ko/Knockout-3.4.2.js"></script>
+    <script src="~/Admin/js/admin-form.js"></script>
+    <script type="text/javascript">
+        var KeyId = '@KeyId';
+        model = new vModel();
+        $(function () {
+            ko.applyBindings(model);//注册vModel
+            App.Load();
+        });
+
+        var App = {
+            IsAdd: function () {
+                return !KeyId;
+            },
+            Load: function () {
+                adminForm.load({
+                    KeyId: KeyId,
+                    url: "@Url.Action("Find")",
+                    callBack: function (r) {
+
+                    }
+                });
+            },
+            Save: function () {
+                adminForm.Save({
+                    url: "@Url.Action("Save")"
+                });
+            },
+            FindBack: {
+                CallBack: function (row, tag, dom) {
+                    console.log('1', row);
+                    console.log('2', tag);
+                    console.log('3', dom);
+                    if (row != null && row.length > 0) row = row[0];
+                    if (tag == "Role") {
+                        model.Role_ID(row ? row.Role_ID : "");
+                        model.Role_Name(row ? row.Role_Name : "");
+                    }
+                }
+            }
+        };
+
+        //User_ID, User_Name, User_LoginName, User_Pwd, User_Email, User_CreateTime
+        function vModel() { @(UI.CreateKOViewModel(new view_sys_user_role()))
+            //this.User_ID = ko.observable("");
+            //this.User_Name = ko.observable("");
+            //this.User_LoginName = ko.observable("");
+            //this.User_Pwd = ko.observable("");
+            //this.User_Email = ko.observable("");
+
+            //this.Role_ID = ko.observable("");
+            //this.Role_Name = ko.observable("");
+        }
+    </script>
+}

@@ -1,0 +1,191 @@
+﻿@{
+    var KeyId = "";
+
+    //这里 只是  一个 示例  这里 可以从 数据库中 读取 数据 然后 加载到页面中
+    var sexList = new List<string>();
+
+    sexList.Add("男");
+    sexList.Add("女");
+
+}
+<form>
+    <div class="page-content animated fadeInDown">
+        <div class="container-fluid" style="padding-bottom:100px;">
+            <div class="row" id="form">
+                <!--检索面板-->
+                @(UI.Input("编号", "Member_Num", 6, new { @readonly = "readonly", type = "number" }))
+
+                @(UI.Input("会员名称", "Member_Name", 6, null, "n", "请输入会员名称", "请输入正确的会员名称"))
+
+                <div class="col-sm-6"><h4 class="example-title">会员电话</h4><input type="text" datatype="n" class="form-control" name="Member_Phone" data-bind="value:Member_Phone" placeholder="请输入 会员电话" /></div>
+                <div class="col-sm-6"><h4 class="example-title">会员电话</h4><input type="text" datatype="n" class="form-control" name="Member_Phone1" placeholder="请输入 会员电话" /></div>
+
+
+                @(UI.Select("性别", "Member_Sex", () =>
+                            {
+                                var Html = "";
+
+                                foreach (var item in sexList)
+                                {
+                                    Html += "<option value=\"" + item + "\">" + item + "</option>";
+                                }
+
+                                return Html;
+                            }, 6, null, "*", "请选择性别"))
+
+                @(UI.Input("生日", "Member_Birthday", 6, new { @readonly = "readonly" }, "*", "请选择生日"))
+                @(UI.FindBack("用户名称", "User_Name", "Member_UserID", Url.Action("Index", "User", new { findback = "Multiple" }), "App.FindBack.CallBack(row,'User')", "App.FindBack.CallBack(null,'User');"))
+
+                @(UI.UploadImage("头像", "Member_Photo"))
+
+                @(UI.UploadFile("文件", "Member_FilePath"))
+
+                @(UI.UploadFileAsync("测试图片", "test", 6))
+                <div class="col-sm-6">
+                    <h4 class="example-title">地理位置图片</h4>
+                    <div class="hzy-upfile">
+                        <div class="hzy-upfile-item">
+                            <div>
+                            </div>
+                        </div>
+                        <div class="hzy-upfile-shade" id="test1">请点击此处选择文件</div>
+                    </div>
+                </div>
+
+                @*@(UI.UploadFileMultiple("文件", "Member_FilePath", "listss(this)", 12))*@
+
+                @(UI.UEditor("介绍", "Member_Introduce", 12))
+
+            </div>
+
+        </div>
+    </div>
+    <!--按钮-->
+    <div class="my-ButtonBar text-right">
+        <div class="btn-group">
+            <button type="button" class="btn btn-success btn-outline" data-power="Add" data-bind="visible: !App.IsAdd()" onclick="adminForm.resetUrl(null)">新增</button>
+            <button class="btn btn-primary btn-outline">提交</button>
+            <button type="button" class="btn btn-danger btn-outline" onclick="admin.layer.close(admin.getLayerIframeIndex());">关闭</button>
+        </div>
+    </div>
+</form>
+@section css{
+}
+@section js{
+    <script src="~/Admin/lib/Ko/Knockout-3.4.2.js"></script>
+    <script src="~/Admin/js/admin-form.js"></script>
+    <script src="~/admin/lib/validform/Validform_v5.3.2_min.js"></script>
+    <!-- 配置文件 -->
+    <script src="~/Admin/lib/nUeditor/neditor.config.js"></script>
+    <!-- 编辑器源码文件 -->
+    <script src="~/Admin/lib/nUeditor/neditor.all.min.js"></script>
+    <script src="~/Admin/lib/nUeditor/i18n/zh-cn/zh-cn.js"></script>
+    <!--业务代码-->
+    <script type="text/javascript">
+        function listss(_this) {
+            if (_this.files[0]) {
+                model.Member_FilePath(_this.files[0].name); $(_this).parent().find('.hzy-upfile-item a').removeAttr('href')
+            }
+        }
+        var KeyId = '@KeyId';
+        model = new vModel();
+        $(function () {
+            ko.applyBindings(model);//注册vModel
+
+            App.Load();
+            adminForm.Validform('form', {
+                callback: function () {
+                    App.Save();
+                }
+            });
+            admin.uploadImg({
+                elem: '#test',
+                done: function (res, index, upload) {
+                    admin.initFile({
+                        key: '#test',
+                        data: res.data,
+                        number: 1
+                    });
+                    model.test(model.test() + ',' + res.data);
+                    console.log(model.test());
+                }
+            });
+            admin.initImg('#test', '/Content/UpFile/20190107/890dc6a9-0ed3-40a0-add3-63dae6ee5b50.jpg,/Content/UpFile/20190107/e856516f-1975-4892-b341-2d3448b57b6e.jpg',true)
+
+            admin.uploadFile({
+                elem: '#test1',
+                data: { exits: '.conf|.pdf' },
+                exts: 'conf|pdf',
+                done: function (res, index, upload) {
+                    admin.initFile({
+                        key:'#test1',
+                        data:res.data,
+                        number:1
+                    });
+                    model.test(model.test() + ',' + res.data);
+                    console.log(model.test());
+                }
+            });
+        });
+
+        var App = {
+            IsAdd: function () {
+                return !KeyId;
+            },
+            Load: function () {
+                //时间 配置 代码
+                admin.laydate.render({
+                    elem: "input[name=Member_Birthday]",
+                    type: 'date',
+                    done: function (value, date, endDate) {
+                        model.Member_Birthday(value);
+                    }
+                });
+                //编辑器 配置
+                var editor = UE.getEditor('Member_Introduce');
+                editor.addListener('blur', function (editor) {
+                    model.Member_Introduce(UE.getEditor('Member_Introduce').getContent());
+                });
+
+                adminForm.load({
+                    KeyId: KeyId,
+                    url: "@Url.Action("Find")",
+                    callBack: function (r) {
+                        setTimeout(function () {
+                            editor.setContent(r.Member_Introduce ? r.Member_Introduce.replace(/'/g, '\'') : "");
+                        }, 300);
+                    }
+                });
+            },
+            Save: function () {
+                //创建 新数据
+                var newData = adminForm.createFormData({
+                    Member_Photo_Files: $("input[name=Member_Photo]")[0].files[0],
+                    Member_FilePath_Fiels: $("input[name=Member_FilePath]")[0].files[0]
+                });
+                adminForm.Save({
+                    url: "@Url.Action("Save")",
+                    data: newData,
+                    isupfile: true
+                });
+            },
+            FindBack: {//查找带回类
+                CallBack: function (row, tag, dom) {
+                    console.log(row);
+                    if (row != null && row.length > 0) row = row[0];
+                    if (tag == "User") {
+                        model.Member_UserID(row ? row.User_ID : "");
+                        model.User_Name(row ? row.User_Name : "");
+                    }
+                }
+            }
+        };
+
+        //Member_ID, Member_Num, Member_Name, Member_Phone, Member_Sex, Member_Birthday, Member_Photo, Member_UserID, Member_Introduce, Member_CreateTime
+        function vModel() {
+            @(
+                UI.CreateKOViewModel(new Member(),"User_Name","test")
+            )
+        }
+    </script>
+}

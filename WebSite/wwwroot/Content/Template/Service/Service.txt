@@ -1,0 +1,195 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq.Expressions;
+using ADT.Models;
+using ADT.Repository.IRepository;
+using ADT.Service.IService;
+
+namespace ADT.Service
+{
+    public class <#TableName#>Service : I<#TableName#>Service
+    {
+        private I<#TableName#>Repository _<#TableName#>RepositoryS;
+        public <#TableName#>Service(I<#TableName#>Repository <#TableName#>RepositoryS)
+        {
+            _<#TableName#>RepositoryS = <#TableName#>RepositoryS;
+        }
+		#region 通用模板功能
+        /// <summary>
+        /// 根据主值查询单条数据
+        /// </summary>
+        /// <param name="pkValue">主键值</param>
+        /// <returns>泛型实体</returns>
+        public <#TableName#> FindById(object pkValue)
+        {
+            return _<#TableName#>RepositoryS.FindById(pkValue);
+        }
+
+        /// <summary>
+        /// 查询所有数据(无分页,请慎用)
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<<#TableName#>> FindAll()
+        {
+            return _<#TableName#>RepositoryS.FindAll();
+        }
+
+        /// <summary>
+        /// 根据条件查询数据
+        /// </summary>
+        /// <param name="predicate">条件表达式树</param>
+        /// <param name="orderBy">排序</param>
+        /// <returns>泛型实体集合</returns>
+        public IEnumerable<<#TableName#>> FindListByClause(Expression<Func<<#TableName#>, bool>> predicate, string orderBy)
+        {
+            return _<#TableName#>RepositoryS.FindListByClause(predicate, orderBy);
+        }
+        /// <summary>
+        /// 根据条件查询总数
+        /// </summary>
+        /// <param name="predicate">条件表达式树</param>
+        /// <returns></returns>
+        public int FindCount(Expression<Func<<#TableName#>, bool>> predicate)
+        {
+            return _<#TableName#>RepositoryS.FindCount(predicate);
+        }
+
+        /// <summary>
+        /// 根据条件分页
+        /// </summary>
+        /// <param name="predicate">条件表达式树</param>
+        /// <param name="page">第几页</param>
+        /// <param name="row">每页显示多少条</param>
+        /// <param name="orderBy">排序规则</param>
+        /// <returns></returns>
+        public IEnumerable<<#TableName#>> FindPageListByClause(Expression<Func<<#TableName#>, bool>> predicate, int page, int row, string orderBy)
+        {
+            return _<#TableName#>RepositoryS.FindPageListByClause(predicate, page, row, orderBy);
+        }
+
+        /// <summary>
+        /// 根据条件分页及查询总数
+        /// </summary>
+        /// <param name="predicate">条件表达式树</param>
+        /// <param name="page">第几页</param>
+        /// <param name="row">每页显示多少条</param>
+        /// <param name="orderBy">排序规则</param>
+        /// <param name="totalNumber">总数（返回值）</param>
+        /// <returns></returns>
+        public IEnumerable<<#TableName#>> FindPageListByClause(Expression<Func<<#TableName#>, bool>> predicate, int page, int row, string orderBy, ref int totalNumber)
+        {
+            return _<#TableName#>RepositoryS.FindPageListByClause(predicate, page, row, orderBy, ref totalNumber);
+        }
+
+        /// <summary>
+        /// 根据条件查询数据
+        /// </summary>
+        /// <param name="predicate">条件表达式树</param>
+        /// <returns></returns>
+        public <#TableName#> FindByClause(Expression<Func<<#TableName#>, bool>> predicate)
+        {
+            return _<#TableName#>RepositoryS.FindByClause(predicate);
+        }
+
+        /// <summary>
+        /// 写入实体数据
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public long Insert(<#TableName#> entity)
+        {
+            return _<#TableName#>RepositoryS.Insert(entity);
+        }
+
+        /// <summary>
+        /// 批量写入实体数据
+        /// </summary>
+        /// <param name="entitylist">实体类集合</param>
+        /// <returns></returns>
+        public long InsertBatch(List<<#TableName#>> entitylist)
+		{
+			return _<#TableName#>RepositoryS.InsertBatch(entitylist);
+		}
+
+        /// <summary>
+        /// 更新实体数据
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool Update(<#TableName#> entity)
+        {
+            return _<#TableName#>RepositoryS.Update(entity);
+        }
+
+        /// <summary>
+        /// 更新实体数据
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="updateColumns">修改字段表达式树</param>
+        /// <returns></returns>
+        public bool Update(<#TableName#> entity, Expression<Func<<#TableName#>, object>> updateColumns)
+        {
+            return _<#TableName#>RepositoryS.Update(entity, updateColumns);
+        }
+
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        /// <param name="entity">实体类</param>
+        /// <returns></returns>
+        public bool Delete(<#TableName#> entity)
+        {
+            return _<#TableName#>RepositoryS.Delete(entity);
+        }
+
+        /// <summary>
+        /// 删除数据
+        /// </summary>
+        /// <param name="where">过滤条件</param>
+        /// <returns></returns>
+        public bool Delete(Expression<Func<<#TableName#>, bool>> @where)
+        {
+            return _<#TableName#>RepositoryS.Delete(@where);
+        }
+
+        /// <summary>
+        /// 删除指定ID的数据
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool DeleteById(object id)
+        {
+            return _<#TableName#>RepositoryS.DeleteById(id);
+        }
+
+        /// <summary>
+        /// 删除指定ID集合的数据(批量删除)
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public bool DeleteByIds(object[] ids)
+        {
+            return _<#TableName#>RepositoryS.DeleteByIds(ids);
+        }
+		#endregion 通用模板功能
+        /// <summary>
+        /// 获取管理后台分页数据
+        /// </summary>
+        /// <param name="predicate">条件表达式树</param>
+        /// <param name="page">第几页</param>
+        /// <param name="row">煤业显示多少条</param>
+        /// <param name="orderBy">排序条件</param>
+        /// <returns></returns>
+        public PageList<<#TableName#>> GetPageList(Expression<Func<<#TableName#>, bool>> predicate, int page, int row, string orderBy)
+        {
+            PageList<<#TableName#>> pageList = new PageList<<#TableName#>>();
+            pageList.page = page;
+            pageList.pageCount = (pageList.total / row);
+            int totalNumber = 0;
+            pageList.rows = _<#TableName#>RepositoryS.FindPageListByClause(predicate, page, row, orderBy, ref totalNumber);
+            pageList.total = totalNumber;
+            return pageList;
+        }
+    }
+}
